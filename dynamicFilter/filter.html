@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="filter.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+        crossorigin="anonymous"></script>
+    <script type="text/javascript" src="./util/messagingUtil.js"></script>
+    <script type="text/javascript" src="./util/contentUtil.js"></script>
+    <title>SAS : Filter</title>
+</head>
+
+<body>
+    <div id="myContent">
+        <select id="dateSelection">
+            <option value="maxDate" selected="selected">Latest date</option>
+            <option value="maxMonth">Latest month</option>
+            <option value="maxYear">Latest year</option>
+        </select>
+        <label class="switch">
+            <input id="enableDateSelection" type="checkbox" checked />
+            <span class="slider round"></span>
+        </label>
+        <div id="selectionInfo"></div>
+    </div>
+    <script>
+        // Assign variables to global scope
+        var dates = [];
+        var vaData;
+        var vaResultName;
+
+        // Function used to define which dates should be included in the report
+        function selectDate(origData, data, type) {
+            // Identify what is the latest date in the data and split the date into day, month, year
+            var max = new Date(Math.max.apply(null, data));
+            var day = max.getUTCDay();
+            var month = max.getMonth();
+            var year = max.getFullYear();
+            // Define the date values to be included based on user selection
+            // Define the text to be displayed below the selection box
+            switch (type) {
+                case 'maxDate':
+                    var selectedID = [data.map(Number).indexOf(+max)];
+                    var displayType = 'date';
+                    var displayValue = origData[selectedID];
+                    break;
+                case 'maxMonth':
+                    var selectedID = [];
+                    data.forEach(function (d) {
+                        if (d.getMonth() == month && d.getFullYear() == year) {
+                            selectedID.push(data.map(Number).indexOf(+d));
+                        }
+                    });
+                    var displayType = 'periode';
+                    var displayValue = month.toString() + '/' + year.toString();
+                    break;
+                case 'maxYear':
+                    var selectedID = [];
+                    data.forEach(function (d) {
+                        if (d.getFullYear() == year) {
+                            selectedID.push(data.map(Number).indexOf(+d));
+                        }
+                    });
+                    var displayType = 'year';
+                    var displayValue = year.toString();
+                    break;
+            }
+            return { 'ID': selectedID, 'type': displayType, 'value': displayValue };
+        }
+
+        // Function called after each event (click, change, load) 
+        function manageEvent() {
+            if ($("#enableDateSelection").is(':checked')) {
+                var selection = selectDate(vaData, dates, $("#dateSelection").val());
+                var html = "Selected " + selection.type + " is " + selection.value;
+            } else {
+                var selection = {};
+                selection.ID = [];
+                var html = "Date selection is currently disabled!";
+            }
+            $("#selectionInfo").empty();
+            $("#selectionInfo").append(html);
+            va.messagingUtil.postSelectionMessage(vaResultName, selection.ID);
+        }
+
+        // Callback function triggered as soon as the data are loaded from VA report
+        function filter(messageFromVA) {
+            // Load the data from VA report to the global scope variables
+            vaData = messageFromVA.data;
+            vaResultName = messageFromVA.resultName;
+            // Convert the dates loaded by VA report to javascript dates
+            if (messageFromVA) {
+                vaData.forEach(function (d) {
+                    var nd = new Date(d);
+                    dates.push(nd);
+                }
+                );
+                manageEvent();
+            }
+        }
+
+        // Call filter function when VA data are loaded
+        va.messagingUtil.setOnDataReceivedCallback(filter);
+
+        // Attach function to UI events
+        $("#dateSelection").on('change', manageEvent);
+        $('#enableDateSelection').on('click', manageEvent);
+        $('#enableDateSelection').on('click', function () {
+            if ($("#enableDateSelection").is(':checked')) {
+                $("#dateSelection").removeAttr("disabled");
+            }
+            else {
+                $("#dateSelection").prop('disabled', 'disabled');
+            }
+        });
+    </script>
+</body>
+
+</html>
