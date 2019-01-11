@@ -27,12 +27,12 @@
     </div>
     <script>
         // Assign variables to global scope
-        var dates = [];
-        var vaData;
+        var vaData = [];
+        var dateFormat;
         var vaResultName;
 
         // Function used to define which dates should be included in the report
-        function selectDate(origData, data, type) {
+        function selectDate(data, type) {
             // Identify what is the latest date in the data and split the date into day, month, year
             var max = new Date(Math.max.apply(null, data));
             var day = max.getUTCDay();
@@ -44,7 +44,7 @@
                 case 'maxDate':
                     var selectedID = [data.map(Number).indexOf(+max)];
                     var displayType = 'date';
-                    var displayValue = origData[selectedID];
+                    var displayValue = data[selectedID].toLocaleDateString();
                     break;
                 case 'maxMonth':
                     var selectedID = [];
@@ -54,7 +54,8 @@
                         }
                     });
                     var displayType = 'periode';
-                    var displayValue = month.toString() + '/' + year.toString();
+                    var realMonth = month + 1;
+                    var displayValue = realMonth.toString() + '/' + year.toString();
                     break;
                 case 'maxYear':
                     var selectedID = [];
@@ -73,7 +74,7 @@
         // Function called after each event (click, change, load) 
         function manageEvent() {
             if ($("#enableDateSelection").is(':checked')) {
-                var selection = selectDate(vaData, dates, $("#dateSelection").val());
+                var selection = selectDate(vaData, $("#dateSelection").val());
                 var html = "Selected " + selection.type + " is " + selection.value;
             } else {
                 var selection = {};
@@ -87,16 +88,18 @@
 
         // Callback function triggered as soon as the data are loaded from VA report
         function filter(messageFromVA) {
-            // Load the data from VA report to the global scope variables
-            vaData = messageFromVA.data;
-            vaResultName = messageFromVA.resultName;
-            // Convert the dates loaded by VA report to javascript dates
-            if (messageFromVA) {
-                vaData.forEach(function (d) {
-                    var nd = new Date(d);
-                    dates.push(nd);
-                }
-                );
+            // Validate data roles
+            if (!va.contentUtil.validateRoles(messageFromVA, ["date"])) {
+                va.messagingUtil.postInstructionalMessage(vaResultName, "SAS Filter expects one input of type 'date'");
+                return;
+            } else {
+                // Load the data from VA report to the global scope variables
+                va.contentUtil.convertDateColumns(messageFromVA);
+                dateFormat = messageFromVA.columns[0].format.formatString;
+                messageFromVA.data.forEach(function (d) {
+                    vaData.push(d[0]);
+                })
+                vaResultName = messageFromVA.resultName;
                 manageEvent();
             }
         }
