@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="thirdPartyHelpers/d3.js"></script>
+    <script type="text/javascript" src="./util/messagingUtil.js"></script>
+    <script type="text/javascript" src="./util/contentUtil.js"></script>
+    <script type="text/javascript" src="./venn.min.js"></script>
+    <title>SAS : Venn Diagram</title>
+</head>
+
+<body>
+    <div id="myContent">Loading ...</div>
+    <script>
+        function createDiagram(messageFromVA) {
+            d3.select("#myContent").html('');
+            if (messageFromVA.data) {
+                var sets = [];
+                for (i = 0; i < messageFromVA.data.length; i++) {
+                    var obs = {};
+                    if (messageFromVA.data[i][0].split(',') != 'Null') {
+                        obs.sets = messageFromVA.data[i][0].split(',');
+                        obs.size = messageFromVA.data[i][1];
+                        sets.push(obs);
+                    }
+                }
+                var chart = venn.VennDiagram();
+                d3.select("#myContent").datum(sets).call(chart);
+            }
+        }
+        va.messagingUtil.setOnDataReceivedCallback(createDiagram); 
+    </script>
+</body>
+
+</html>
