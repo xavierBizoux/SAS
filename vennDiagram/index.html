@@ -17,6 +17,7 @@
     <script>
         function createDiagram(messageFromVA) {
             d3.select("#myContent").html('');
+            console.log(messageFromVA);
             if (messageFromVA.data) {
                 var sets = [];
                 for (i = 0; i < messageFromVA.data.length; i++) {
