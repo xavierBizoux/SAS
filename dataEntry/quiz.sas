@@ -25,7 +25,7 @@ libname casuser cas caslib="casuser";
 		%let id = 1;
 			
 			data casuser.questions; 
-				set visual.quizz_programming; 
+				set visual.quiz_programming; 
 			run;
 			proc cas; 
 				table.promote /caslib="casuser" name="questions";
@@ -53,18 +53,18 @@ libname casuser cas caslib="casuser";
 			run;
 			/* Load data into the CASLib used for reporting and perform some cleanup activities */
 			proc cas;
-				table.tableExists result=res/caslib='visual' name='quizz_answers';
+				table.tableExists result=res/caslib='visual' name='quiz_answers';
 				
 				if res.exists > 0 then
 				do;
-					datastep.runcode result=dsResult /code="data visual.quizz_answers (append=yes); set casuser.toLoad; run;";
+					datastep.runcode result=dsResult /code="data visual.quiz_answers (append=yes); set casuser.toLoad; run;";
 				end;
 				else
 				do;
-					table.promote / caslib='casuser' name='toLoad' target='quizz_answers' targetlib='visual';
-					table.promote / caslib='visual' name='quizz_answers';
+					table.promote / caslib='casuser' name='toLoad' target='quiz_answers' targetlib='visual';
+					table.promote / caslib='visual' name='quiz_answers';
 				end;
-				table.save / caslib='visual' name='quizz_answers' table={caslib='visual' name='quizz_answers'} replace=true;
+				table.save / caslib='visual' name='quiz_answers' table={caslib='visual' name='quiz_answers'} replace=true;
 				table.dropTable / caslib='casuser' name='questions';
 				table.deleteSource / caslib='casuser' source='questions';
 				table.dropTable / caslib='casuser' name='toLoad';
@@ -98,7 +98,7 @@ libname casuser cas caslib="casuser";
 %macro html;
 	%if %eval(&id > &maxid) %then
 		%do;
-	/* Call the quizz summary page */
+	/* Call the quiz summary page */
 			%html_result;
 		%end;
 	%else
@@ -112,7 +112,7 @@ libname casuser cas caslib="casuser";
 				if _n_ = 1 then do;
 					put '<html lang="en">';
 					put '<head>';
-					put '<title>Quizz Programming</title>';
+					put '<title>quiz Programming</title>';
 					put '<meta charset="utf-8">';
 					put '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
 					put '<meta author="BIZOUX, Xavier">';
@@ -138,7 +138,7 @@ libname casuser cas caslib="casuser";
 					do;
 						/* Create the form calling the SAS JobExecution and the specific job */
 						put '<form action="/SASJobExecution/">';
-						put '<input type="hidden" name="_program" value="/gelcontent/Jobs/Quizz">';
+						put '<input type="hidden" name="_program" value="/gelcontent/Jobs/Quiz">';
 						put '<input type="hidden" name="id" value="' id +(-1)'">';
 						put '<section>';
 						put '<header>';
@@ -182,7 +182,7 @@ libname casuser cas caslib="casuser";
 			do;
 				put '<html lang="en">';
 				put '<head>';
-				put '<title>Quizz Programming</title>';
+				put '<title>quiz Programming</title>';
 				put '<meta charset="utf-8">';
 				put 
 					'<meta name="viewport" content="width=device-width, initial-scale=1.0">';
