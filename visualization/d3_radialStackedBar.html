@@ -138,6 +138,7 @@ limitations under the License.
                     .endAngle(function (d) { return x(d.data.State) + x.bandwidth(); })*/
                     .startAngle(function (d) { 
                         var keys = Object.keys(d.data);
+                        console.log(keys);
                         return x(keys[1]); })
                     .endAngle(function (d) { 
                         var keys = Object.keys(d.data);
