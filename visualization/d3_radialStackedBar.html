@@ -138,11 +138,10 @@ limitations under the License.
                     .endAngle(function (d) { return x(d.data.State) + x.bandwidth(); })*/
                     .startAngle(function (d) { 
                         var keys = Object.keys(d.data);
-                        console.log(keys);
-                        return x(keys[1]); })
+                        return x(d[keys[1]]); })
                     .endAngle(function (d) { 
                         var keys = Object.keys(d.data);
-                        return x(keys[1]) + x.bandwidth(); })
+                        return x(d[keys[1]]) + x.bandwidth(); })
                     .padAngle(0.01)
                     .padRadius(innerRadius));
 
@@ -151,15 +150,21 @@ limitations under the License.
                 .data(data)
                 .enter().append("g")
                 .attr("text-anchor", "middle")
-                .attr("transform", function (d) { return "rotate(" + ((x(d.State) + x.bandwidth() / 2) * 180 / Math.PI - 90) + ")translate(" + innerRadius + ",0)"; });
+                .attr("transform", function (d) { 
+                    var keys = Object.keys(d);
+                    return "rotate(" + ((x(d[keys[1]]) + x.bandwidth() / 2) * 180 / Math.PI - 90) + ")translate(" + innerRadius + ",0)"; });
 
             label.append("line")
                 .attr("x2", -5)
                 .attr("stroke", "#000");
 
             label.append("text")
-                .attr("transform", function (d) { return (x(d.State) + x.bandwidth() / 2 + Math.PI / 2) % (2 * Math.PI) < Math.PI ? "rotate(90)translate(0,16)" : "rotate(-90)translate(0,-9)"; })
-                .text(function (d) { return d.State; });
+                .attr("transform", function (d) { 
+                    var keys = Object.keys(d);
+                    return (x(d[keys[1]]) + x.bandwidth() / 2 + Math.PI / 2) % (2 * Math.PI) < Math.PI ? "rotate(90)translate(0,16)" : "rotate(-90)translate(0,-9)"; })
+                .text(function (d) { 
+                    var keys = Object.keys(d);
+                    return d[keys[1]]; });
 
             var yAxis = g.append("g")
                 .attr("text-anchor", "middle");
