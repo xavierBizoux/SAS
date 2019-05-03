@@ -113,10 +113,14 @@ limitations under the License.
 
             var data = myData;
 
-            x.domain(data.map(function (d) { 
+            x.domain(data.map(function (d) {
                 var keys = Object.keys(d);
-		        return d[keys[1]] }));
-            y.domain([0, d3.max(data, function (d) { return d.total; })]);
+                return d[keys[1]];
+            }));
+            y.domain([0, d3.max(data, function (d) {
+                var keys = Object.keys(d);
+                return d[keys[0]];
+            })]);
             z.domain(data.columns.slice(1));
 
             g.append("g")
