@@ -176,8 +176,7 @@ limitations under the License.
 
             yAxis.append("text")
                 .attr("y", function (d) { return -y(y.ticks(5).pop()); })
-                .attr("dy", "-1em")
-                .text("Population");
+                .attr("dy", "-1em");
 
             var legend = g.append("g")
                 .selectAll("g")
