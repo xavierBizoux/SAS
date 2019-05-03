@@ -138,10 +138,10 @@ limitations under the License.
                     .endAngle(function (d) { return x(d.data.State) + x.bandwidth(); })*/
                     .startAngle(function (d) { 
                         var keys = Object.keys(d.data);
-                        return x(d[keys[1]]); })
+                        return x(d.data[keys[1]]); })
                     .endAngle(function (d) { 
                         var keys = Object.keys(d.data);
-                        return x(d[keys[1]]) + x.bandwidth(); })
+                        return x(d.data[keys[1]]) + x.bandwidth(); })
                     .padAngle(0.01)
                     .padRadius(innerRadius));
 
