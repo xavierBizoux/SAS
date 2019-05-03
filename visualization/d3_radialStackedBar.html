@@ -134,8 +134,10 @@ limitations under the License.
                 .attr("d", d3.arc()
                     .innerRadius(function (d) { return y(d[0]); })
                     .outerRadius(function (d) { return y(d[1]); })
-                    .startAngle(function (d) { return x(d.data.State); })
-                    .endAngle(function (d) { return x(d.data.State) + x.bandwidth(); })
+                    /*.startAngle(function (d) { return x(d.data.State); })
+                    .endAngle(function (d) { return x(d.data.State) + x.bandwidth(); })*/
+                    .startAngle(function (d) { return x(d.data[1]); })
+                    .endAngle(function (d) { return x(d.data[0]) + x.bandwidth(); })
                     .padAngle(0.01)
                     .padRadius(innerRadius));
 
