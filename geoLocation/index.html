@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="/utils/messagingUtil.js"></script>
+    <script type="text/javascript" src="/utils/contentUtil.js"></script>
+    <title>SAS : Geo Filter</title>
+</head>
+
+<body>
+
+    <!--button onclick="getLocation()">Try It</button-->
+
+    <p id="demo"></p>
+    <script>
+        var x = document.getElementById("demo");
+        var vaData = [];
+        var vaResultName;
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showCountryName, showError);
+            } else {
+                x.innerHTML = "Geolocation is not supported by this browser.";
+            }
+        }
+
+        function showCountryName(position) {
+            var request = new XMLHttpRequest();
+            var url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + position.coords.latitude + "&lon=" + position.coords.longitude + "&zoom=18&addressdetails=1";
+            request.open('GET', url, true);
+            request.onload = function () {
+                var data = JSON.parse(this.response);
+                var selection = [];
+                selection.push(vaData.findIndex(function (test) { return test == data.address.country }));
+                va.messagingUtil.postSelectionMessage(vaResultName, selection);
+                x.innerHTML = "Current country is " + data.address.country;
+            };
+            request.send();
+        }
+
+        function showError(error) {
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    x.innerHTML = "User denied the request for Geolocation."
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    x.innerHTML = "Location information is unavailable."
+                    break;
+                case error.TIMEOUT:
+                    x.innerHTML = "The request to get user location timed out."
+                    break;
+                case error.UNKNOWN_ERROR:
+                    x.innerHTML = "An unknown error occurred."
+                    break;
+            }
+        }
+
+        function filter(messageFromVA) {
+            vaResultName = messageFromVA.resultName;
+            vaData = messageFromVA.data;
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showCountryName, showError);
+            } else {
+                x.innerHTML = "Geolocation is not supported by this browser.";
+            }
+        }
+
+        va.messagingUtil.setOnDataReceivedCallback(filter);
+    </script>
+</body>
+
+</html>
