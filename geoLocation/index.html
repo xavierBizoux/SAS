@@ -19,7 +19,11 @@
 
         function showCountryName(position) {
             var request = new XMLHttpRequest();
-            var url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + position.coords.latitude + "&lon=" + position.coords.longitude + "&zoom=18&addressdetails=1";
+            var url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" ;
+                url += position.coords.latitude ;
+                url += "&lon=" ;
+                url += position.coords.longitude;
+                url += "&zoom=18&addressdetails=1";
             request.open('GET', url, true);
             request.onload = function () {
                 var data = JSON.parse(this.response);
