@@ -24,7 +24,7 @@
             request.onload = function () {
                 var data = JSON.parse(this.response);
                 var selection = [];
-                selection.push(vaData.findIndex(function (test) { return test == data.address.country }));
+                selection.push(vaData.findIndex(function (test) { return test == data.address.country_code.toUpperCase() }));
                 va.messagingUtil.postSelectionMessage(vaResultName, selection);
                 x.innerHTML = "Current country is " + data.address.country;
             };
