@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <!-- Required meta tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="./libs/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="./util/messagingUtil.js"></script>
+    <script type="text/javascript" src="./util/contentUtil.js"></script>
+    <title>Human Gauge</title>
+</head>
+<style>
+    img {
+        position: absolute;
+        left: 0px;
+        top: 8px;
+        height: 85%;
+        width: 85%;
+        z-index: 1;
+    }
+
+    .yellow {
+        background-color: yellow;
+    }
+
+    .blue {
+        background-color: cyan;
+    }
+
+    .color1 {
+        position: relative;
+        left: 0px;
+        right: 0px;
+        bottom: 0px;
+        z-index: -1;
+    }
+
+    .color2 {
+        position: relative;
+        left: 0px;
+        right: 0px;
+        z-index: -1;
+    }
+</style>
+
+<body>
+    <div>
+        <img class="gauge" src="./man.png">
+        <div class="color1"></div>
+        <div class="color2"></div>
+        <div>
+            <table>
+                <tr>
+                    <td class="yellow"></td>
+                    <td class="blue"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <script>
+        function setSize(messageFromVA) {
+            if (messageFromVA.data) {
+                let data = messageFromVA.data;
+                if (data.length > 1 ) {
+                    var ratio = data[0][1] / (data[0][1] + data[1][1]);
+                } else {
+                    var ratio = 1;
+                }
+                let imgHeight = $(".gauge").height();
+                let imgWidth = $(".gauge").width();
+                var topHeight = imgHeight * ratio;
+                $(".color1").height(topHeight);
+                $(".color2").height(imgHeight - topHeight);
+                $(".color1").width(imgWidth * 0.9);
+                $(".color2").width(imgWidth * 0.9);
+                $(".color1").addClass("yellow");
+                $(".color2").addClass("blue");
+                $(".yellow").html(data[0][0]);
+                if (data.length > 1) {
+                    $(".blue").html(data[1][0]);
+                }
+            }
+        }
+        va.messagingUtil.setOnDataReceivedCallback(setSize);
+    </script>
+</body>
