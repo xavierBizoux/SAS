@@ -20,15 +20,15 @@
         z-index: 1;
     }
 
-    .yellow {
-        background-color: yellow;
+    .female {
+        background-color: #ffcc32;
     }
 
-    .blue {
-        background-color: cyan;
+    .male {
+        background-color: #33A3FF;
     }
 
-    .color1 {
+    .color0 {
         position: relative;
         left: 0px;
         right: 0px;
@@ -36,7 +36,7 @@
         z-index: -1;
     }
 
-    .color2 {
+    .color1 {
         position: relative;
         left: 0px;
         right: 0px;
@@ -47,41 +47,44 @@
 <body>
     <div>
         <img class="gauge" src="./man.png">
+        <div class="color0"></div>
         <div class="color1"></div>
-        <div class="color2"></div>
         <div>
             <table>
                 <tr>
-                    <td class="yellow"></td>
-                    <td class="blue"></td>
+                    <td class="female">F</td>
+                    <td class="male">M</td>
                 </tr>
             </table>
         </div>
     </div>
     <script>
-        function setSize(messageFromVA) {
+        function displayGauge(messageFromVA) {
             if (messageFromVA.data) {
                 let data = messageFromVA.data;
-                if (data.length > 1 ) {
-                    var ratio = data[0][1] / (data[0][1] + data[1][1]);
-                } else {
-                    var ratio = 1;
-                }
                 let imgHeight = $(".gauge").height();
                 let imgWidth = $(".gauge").width();
+                let ratio = data[0][1];
                 var topHeight = imgHeight * ratio;
-                $(".color1").height(topHeight);
-                $(".color2").height(imgHeight - topHeight);
-                $(".color1").width(imgWidth * 0.9);
-                $(".color2").width(imgWidth * 0.9);
-                $(".color1").addClass("yellow");
-                $(".color2").addClass("blue");
-                $(".yellow").html(data[0][0]);
-                if (data.length > 1) {
-                    $(".blue").html(data[1][0]);
+                $(".color0").height(topHeight);
+                $(".color1").height(imgHeight - topHeight);
+                $(".color0, .color1").width(imgWidth * 0.9);
+                data.forEach(function (obs, i) {
+                    switch (obs[0]) {
+                        case 'F':
+                            var color = 'female';
+                            break;
+                        case 'M':
+                            var color = 'male';
+                            break;
+                    }
+                    $(".color" + i).attr("class", "color"+i);
+                    $(".color" + i).addClass(color);
                 }
+                );
             }
         }
-        va.messagingUtil.setOnDataReceivedCallback(setSize);
+
+        va.messagingUtil.setOnDataReceivedCallback(displayGauge);
     </script>
 </body>
