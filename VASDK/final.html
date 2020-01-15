@@ -9,6 +9,11 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
     <title>VA SDK</title>
+    <style>
+        .row {
+                min-height: 350px;
+        }
+    </style>
 </head>
 
 <body>
@@ -17,14 +22,24 @@
             <h1>Welcome to SAS VA SDK</h1>
         </div>
     </header>
-
+    <div class="container">
+    <div class="row">
+    <sas-report-object class="col-6" objectName="ve26" authenticationType="credentials" url="http://va85.gel.sas.com"
+         reportUri="/reports/reports/256c5cec-747a-4e15-8233-45ebcf489a18"></sas-report-object>
+    <sas-report-object  class="col-6" objectName="ve49" authenticationType="credentials" url="http://va85.gel.sas.com"
+         reportUri="/reports/reports/256c5cec-747a-4e15-8233-45ebcf489a18"></sas-report-object>
+    </div>
+   <div class="row">
+    <sas-report-object class="col-12" objectName="ve37" authenticationType="credentials" url="http://va85.gel.sas.com"
+         reportUri="/reports/reports/256c5cec-747a-4e15-8233-45ebcf489a18"></sas-report-object>
+    </div>
+    </div>
     <!-- jQuery first, then Popper.js, then Bootstrap JS. -->
     <script src="node_modules/jquery/dist/jquery.slim.min.js"></script>
     <script src="node_modules/popper.js/dist/umd/popper.min.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
     <script async src="node_modules/@sassoftware/va-report-components/dist/umd/va-report-components.js"></script>
     <script async src="node_modules/@webcomponents/custom-elements/custom-elements.min.js"></script>
-
 </body>
 
 </html>
