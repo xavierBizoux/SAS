@@ -29,12 +29,12 @@
 ####################################################################
 #### COMMAND LINE EXAMPLE                                       ####
 ####################################################################
-#### ./postReport.py -a myAdmin                                  ####
+#### ./postReport.py -a myAdmin                                 ####
 ####                -p myAdminPW                                ####
-####                -sn http://myServer.sas.com:80              ####
+####                -sn http://myServer.sas.com                 ####
 ####                -an app                                     ####
 ####                -as appsecret                               ####
-####                -i  /tmp/CICD                               ####
+####                -i  /tmp/CICD/CarsReport.json               ####
 ####################################################################
 
 import json
