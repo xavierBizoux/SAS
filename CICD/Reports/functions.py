@@ -1,5 +1,6 @@
 import requests
 import json
+import time
 
 
 def authenticateUser(serverName, adminUser, adminPW, appName, appSecret):
@@ -29,7 +30,8 @@ def getFolder(serverName, token, location):
 def getReport(serverName, token, location, name):
     # Function to retrieve report information
     folderId = getFolder(serverName, token, location)['id']
-    url = "{0:s}/folders/folders/{1:s}/members".format(serverName, folderId)
+    url = "{0:s}/folders/folders/{1:s}/members".format(
+        serverName, folderId)
     parameters = {"filter": 'contains(name,"' + name + '")'}
     headers = {
         'Accept': 'application/vnd.sas.collection+json',
@@ -64,9 +66,9 @@ def deleteReport(serverName, token, reportUri):
     requests.delete(url, headers=headers)
 
 
-
 def updateReportContent(serverName, token, report, reportContent):
-    url = "{0:s}/reports/reports/{1:s}/content".format(serverName, report.json()['id'])
+    url = "{0:s}/reports/reports/{1:s}/content".format(
+        serverName, report.json()['id'])
     body = reportContent
     headers = {
         'Content-Type': 'application/vnd.sas.report.content+json',
@@ -77,12 +79,15 @@ def updateReportContent(serverName, token, report, reportContent):
                  json=body,
                  headers=headers)
 
+
 def createReport(serverName, token, location, reportName, reportContent):
     try:
-        reportUri = getReport(serverName, token, location, reportName)['uri']
+        reportUri = getReport(
+            serverName, token, location, reportName)['uri']
         deleteReport(serverName, token, reportUri)
     except IndexError:
-        print("Report not {0:s} found in {1:s}".format(reportName, location))
+        print("Report not {0:s} found in {1:s}".format(
+            reportName, location))
     folderId = getFolder(serverName, token, location)["links"][0]['uri']
     url = "{0:s}/reports/reports".format(serverName)
     body = {"name": reportName,
@@ -99,3 +104,43 @@ def createReport(serverName, token, location, reportName, reportContent):
                            headers=headers)
     updateReportContent(serverName, token, report, reportContent)
     return report
+
+
+def getJob(serverName, token, jobId):
+    url = "{0:s}/reportImages/jobs/{1:s}".format(serverName, jobId)
+    params = {
+        "wait": 10
+    }
+    headers = {
+        'Accept': 'application/vnd.sas.report.images.job+json',
+        'authorization': 'Bearer ' + token
+    }
+    job = requests.get(url, params=params, headers=headers)
+    return job
+
+
+def getReportImage(serverName, token, location, name):
+    # Function to retrieve an image from the report
+    reportUri = getReport(serverName, token, location, name)["uri"]
+    url = "{0:s}/reportImages/jobs#requestsParams".format(serverName)
+    params = {
+        "reportUri": reportUri,
+        "size": "600x600",
+        "layoutType": "entireSection",
+        "wait": 10,
+        "sectionIndex": 0,
+        "renderLimit": 1,
+        "refresh": True
+    }
+    headers = {
+        'Accept': 'application/vnd.sas.report.images.job+json',
+        'Accept-Language': 'string',
+        'Accept-Locale': 'string',
+        'authorization': 'Bearer ' + token
+    }
+    job = requests.post(url, params=params, headers=headers)
+    if job.json()["state"] != "completed":
+        while job.json()["state"] == "running":
+            job = getJob(serverName, token, job.json()['id'])
+    image = job
+    return image.json()
