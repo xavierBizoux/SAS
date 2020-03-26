@@ -109,7 +109,7 @@ def createReport(serverName, token, location, reportName, reportContent):
 def getJob(serverName, token, jobId):
     url = "{0:s}/reportImages/jobs/{1:s}".format(serverName, jobId)
     params = {
-        "wait": 10
+        "wait": 5
     }
     headers = {
         'Accept': 'application/vnd.sas.report.images.job+json',
@@ -127,9 +127,7 @@ def getReportImage(serverName, token, location, name):
         "reportUri": reportUri,
         "size": "600x600",
         "layoutType": "entireSection",
-        "wait": 10,
-        "sectionIndex": 0,
-        "renderLimit": 1,
+        "wait": 5,
         "refresh": True
     }
     headers = {
@@ -139,8 +137,7 @@ def getReportImage(serverName, token, location, name):
         'authorization': 'Bearer ' + token
     }
     job = requests.post(url, params=params, headers=headers)
-    if job.json()["state"] != "completed":
+    if job.json()["state"] not in ["completed", "error"]:
         while job.json()["state"] == "running":
             job = getJob(serverName, token, job.json()['id'])
-    image = job
-    return image.json()
+    return job.json()
