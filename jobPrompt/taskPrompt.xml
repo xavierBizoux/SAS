@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Task schemaVersion="7.2">
+    <Registration>
+        <Name>Filter Cars</Name>
+        <Description>Prompt for SASHelp Cars report</Description>
+        <Version>5.2</Version>
+    </Registration>
+    <Metadata>
+        <DataSources>
+            <DataSource name="dataset" defaultValue="sashelp.cars" where="false" required="true" readOnly="true">
+                <Filters>
+                    <Filter name="originFilter">
+                        <Column column="origin" sortBy="label" sortDirection="ascending"/>
+                    </Filter>
+                    <Filter name="typeFilter">
+                        <Column column="type" sortBy="label" sortDirection="ascending"/>
+                        <Where>
+                            <Expressions>
+                                <Expression operation="eq">
+                                    <Column column="origin" sortBy="label"/>
+                                    <Value option="var_origin"/>
+                                </Expression>
+                            </Expressions>
+                        </Where>
+                    </Filter>
+                    <Filter name="driveTrainFilter">
+                        <Column column="driveTrain" sortBy="label" sortDirection="ascending"/>
+                        <Where>
+                            <Expressions>
+                                <Expression operation="in">
+                                    <Column column="type" sortBy="label"/>
+                                    <Value option="var_type"/>
+                                </Expression>
+                            </Expressions>
+                        </Where>
+                    </Filter>
+                </Filters>
+            </DataSource>
+        </DataSources>
+        <Options>
+            <Option name="filterTab" inputType="string">
+                Filtering
+            </Option>
+            <Option name="geoGroup" inputType="string">
+                Geography
+            </Option>
+            <Option name="var_origin" filter="originFilter" inputType="combobox" defaultValue="Asia" required="true" missingMessage="Please select an origin!">
+                Select the origin of the car:
+            </Option>
+            <Option name="characteristicsGroup" inputType="string">
+                Car's characteristics
+            </Option>
+            <Option name="var_type" filter="typeFilter" inputType="select">
+                Select the type of car:
+            </Option>
+            <Option name="var_driveTrain" filter="driveTrainFilter" inputType="combobox">
+                Which kind of drive train do you want?
+            </Option>
+
+            <Option name="financialGroup" inputType="string">
+                Financial aspect
+            </Option>
+            <Option name="var_Invoice" inputType="slider" defaultValue="50000" minValue="10000" discreteValues="10" maxValue="100000" promptMessage="Please enter a value between 5.000 and 1.000.000">
+                What is the maximum price you want to pay? 
+            </Option>
+        </Options>
+    </Metadata>
+    <UI>
+        <Container option="filterTab">
+            <DataItem data="dataset"/>
+            <Group option="geoGroup" open="true">
+                <OptionChoice option="var_origin">
+                </OptionChoice>
+            </Group>
+            <Group option="characteristicsGroup" open="true">
+                <OptionChoice option="var_type">
+                </OptionChoice>
+                <OptionChoice option="var_driveTrain">
+                </OptionChoice>
+            </Group>
+            <Group option="financialGroup" open="true">
+                <OptionItem option="var_Invoice"/>
+            </Group>
+        </Container>
+    </UI>
+    <OptionDependencies>
+        <OptionDependency>
+            <TriggerOption option="var_origin"/>
+                    <TriggerValue value="Asia">
+                              <ShowTarget option="financialGroup"/>
+                    </TriggerValue>
+        </OptionDependency>
+    </OptionDependencies>
+</Task>
