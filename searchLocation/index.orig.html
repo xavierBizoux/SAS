@@ -1,0 +1,118 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>Request data from a remote server | Sample | ArcGIS API for JavaScript 4.18</title>
+
+    <style>
+      html,
+      body,
+
+      #container {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+
+      .container {
+        padding: 1em;
+      }
+
+      #btnQuery {
+        overflow: auto;
+        text-align: center;
+        cursor: pointer;
+        font-size: 1em;
+      }
+
+      input {
+        width: 75%;
+      }
+    </style>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css" />
+    <script src="https://js.arcgis.com/4.18/"></script>
+  </head>
+
+  <body>
+    <div class="container esri-widget">
+      <div>
+        <h2>Using esri/request</h2>
+        <button id="btnQuery">Make Request</button>
+        <input
+          id="inputUrl"
+          type="text"
+          placeholder="Search Address..."
+        />
+      </div>
+      <pre id="resultsDiv"></pre>
+    </div>
+
+    <script>
+      require(["esri/request"], function(esriRequest) {
+        var resultsDiv = document.getElementById("resultsDiv");
+        var input = document.getElementById("inputUrl");
+
+        // Define the 'options' for the request
+        var options = {
+          query: {
+            f: "json"
+          },
+          responseType: "json"
+        };
+
+        // Make the request on a button click using the
+        // value of the 'input' text
+        btnQuery.addEventListener("click", function() {
+          var url = "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/suggest?text="+input.value+"&countryCode=USA&region=Texas&category=Address&isCollection=false&f=pjson";
+          esriRequest(url, options).then(function(response) {
+            console.log("response", response);
+            if (response) {
+              if (response.data.suggestions) {
+                var resultObj = new String();
+                var textResult, magicKey;
+                for (let i =0; i< response.data.suggestions.length; i++) {
+                      textResult = response.data.suggestions[i]["text"];
+                      magicKey = response.data.suggestions[i]["magicKey"];
+                      console.log('textResult: '+textResult+" magicKey: "+magicKey);
+                      resultObj[magicKey] = textResult;
+                  //textArray[] = response.data.suggestions[i]["text"];
+                  //magicKeys[i] = response.data.suggestions[i]["magicKey"];
+                  console.log(magicKey+": "+ resultObj[magicKey]);
+                  }
+                }
+              }
+
+               var div = document.querySelector("#resultsDiv"),
+                   frag = document.createDocumentFragment(),
+                   select = document.createElement("select");
+               for (var key in resultObj) {
+                   select.options.add( new Option(resultObj[key], key) );
+               }
+               select.selectedIndex = 0;
+               frag.appendChild(select);
+               div.appendChild(frag);
+
+
+               select.onchange = function () {
+                    var t =  select.options[select.selectedIndex].text;
+                    var k = select.value;
+                    getLocation(t, k).then(data => resultsDiv.innerHTML += "<br />"+ "latitude: "+data.candidates[0].location["y"] + "<br />" + "longitude: "+ data.candidates[0].location["x"]);
+                };
+
+          });
+        });
+      });
+
+      async function getLocation(textParam, keyParam) {
+        let locationResponse =  await fetch("https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?SingleLine="+textParam+"&magicKey="+keyParam+"&f=json");
+        let data= await locationResponse.json();
+        return data;
+      }
+
+
+
+    </script>
+  </body>
+</html>
