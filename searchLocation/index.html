@@ -117,7 +117,7 @@
                 "f": "pjson"
             };
             $.ajax({ url: url, method: "GET", data: params, dataType: 'JSON' })
-                .then(response => getSuggestions(response));
+                .then(response => displaySuggestions(response));
         });
         $('#distance').change(function () {
             $('#distanceValue').text($(this).val());
