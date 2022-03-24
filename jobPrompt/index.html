@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Job with Dynamic prompts</title>
+</head>
+<script src="/SASJobExecution/resources/sap/ui/thirdparty/jquery.js"></script>
+<script src="/SASJobExecution/resources/dynamic.min.js"></script>
+<style>
+    details div {
+        padding: 1em;
+    }
+
+    summary {
+        margin-top: .5em;
+        font-size: large;
+        font-weight: bold;
+    }
+
+    label {
+        display: block;
+    }
+
+    select {
+        margin-left: 1em;
+        margin-top: 1em;
+        min-width: 10em;
+    }
+
+    input[type="range"] {
+        margin-left: 1em;
+        margin-top: 2em;
+        width: 40em;
+        float: left;
+        vertical-align: middle;
+    }
+
+    input[type="submit"] {
+        padding: 0.5em;
+    }
+
+    .displayValue {
+        margin-left: 1em;
+        margin-top: 1em;
+        border-radius: 0.5em;
+        border-color: grey;
+        border-style: solid;
+        float: left;
+        width: 5em;
+        height: .6em;
+        vertical-align: middle;
+        padding-top: .5em;
+    }
+</style>
+
+<body onload="SASDynamic.init()">
+    <form action="/SASJobExecution/" target="_tab">
+        <input type="hidden" name="_program" value="$PROGRAM$">
+        <input type="hidden" name="_action" value="execute">
+        <input type="submit" value="Submit">
+        <hr>
+        <details>
+            <summary>Geography</summary>
+            <div>
+                <label for="var_origin">Choose a geographic location:</label>
+                <select name="var_origin" id="var_origin" data-colname="origin" data-library="SASHELP" data-table="CARS"></select>
+            </div>
+        </details>
+        <details>
+            <summary>Car's characteristics</summary>
+            <div>
+                <label for="var_type">Choose one or multiple car types:</label>
+                <select name="var_type" id="var_type" data-colname="type" multiple size="10" data-library="SASHELP" data-table="CARS" data-uses="var_origin"></select>
+            </div>
+            <div>
+                <label for="var_driveTrain">Which kind of drive train do you want:</label>
+                <select name="var_driveTrain" id="var_driveTrain" data-colname="drivetrain" data-library="SASHELP" data-table="CARS" data-uses="var_origin, var_type"></select>
+            </div>
+        </details>
+        <div data-visible="var_origin,eq,Asia">
+            <details>
+                <summary>Financial aspect</summary>
+                <div>
+                    <label for="var_invoice">What is the maximum price you want to pay?</label>
+                    <div id="invoiceValue" class="displayValue"></div>
+                    <input type="range" id="var_invoice" name="var_invoice" min="10000" max="150000" value="50000" step="1000" data-uses="var_origin">
+                </div>
+            </details>
+        </div>
+    </form>
+    <script>
+        document.getElementById("var_invoice").addEventListener("change", (e) => {
+            document.getElementById("invoiceValue").innerHTML = e.target.value
+        })
+    </script>
+</body>
+
+</html>
