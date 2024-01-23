@@ -72,7 +72,7 @@
 
     // Call SAS Viya job using coordinates and distance information
     function getCASData(coordinates, distance) {
-        const url = "http://sasviya01.race.sas.com/SASJobExecution/?_program=/gelcontent/Demo/VISUAL/Jobs/geoFilter";
+        const url = "http://server.demo.sas.com/SASJobExecution/?_program=/gelcontent/Demo/VISUAL/Jobs/geoFilter";
         let params = {
             "lon": coordinates.x,
             "lat": coordinates.y,
